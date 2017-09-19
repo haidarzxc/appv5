@@ -67,7 +67,7 @@ class MainApp(App):
     def On_config_change(self, settings, config, section, key, value):
         if section==u'MainApp':
             if key==u'button_run':
-                # print ("run pressed")
+                print ("run pressed")
                 super(MainApp, self).close_settings()
 
 Factory.register('Root', cls=Root)
