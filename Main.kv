@@ -1,0 +1,131 @@
+<Root>:
+    ScreenManager:
+        id: screen_manager
+        LoginScreen:
+            name: "login_screen"
+        MainScreen:
+            name: "main_screen"
+
+<Container@Screen>:
+    BoxLayout:
+        spacing: 10
+        padding: [5, 5, 5, 5]
+        size_hint: 1, .6
+        orientation: "vertical"
+        BoxLayout:
+            Label:
+                text: "Connect"
+                font_size: 36
+        BoxLayout: 
+            Label:
+                text: "User Name"
+                size_hint: .5, 1
+                font_size: 24
+            TextInput:
+                id:user_name
+        BoxLayout:  
+            Label:
+                text: "Passowrd"
+                size_hint: .5, 1
+                font_size: 24
+            TextInput:
+                id:password
+        BoxLayout: 
+            Widget: 
+            Button:
+                text: "Login"
+                on_release: app.root.changeScreen(self.text.lower())
+        
+<LoginScreen@Screen>:
+    BoxLayout:
+        EmptyWidget:
+        Image:
+            source:'../images/bema_login.png'
+
+<EmptyWidget@Screen>:
+    BoxLayout:
+        orientation: "vertical"
+        Container:
+        Widget:
+
+<MainScreen@Screen>:
+    GridLayout:
+        rows:3
+#        size_hint: 1,.666
+        ToolbarScreen:
+        Body:
+        Widget:
+
+<Body@Screen>:
+    BoxLayout:
+        Image:
+            source:'../images/bema_logo_home.png'
+            
+
+
+<ToolbarScreen@Screen>:
+    BoxLayout:
+#        pos_hint: {'center_x':.5,'center_y':.5}
+#        top: self.parent.top
+        pos_hint:{'right':1, 'top':1}
+        size_hint_y: None
+        height: 32
+        spacing: 10 
+        padding: 3   
+                
+        canvas:
+            Color:
+                rgba: .1, .1, .1, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Button:
+            text:"Query"
+            size_hint_x: None
+            width: 65
+            on_release:app.open_settings()
+        Button:
+            text:"Export"
+            size_hint_x: None
+            width: 65
+            on_release:app.root.show_save()
+        Button:
+            text:"Settings"
+            size_hint_x: None
+            width: 65
+            #on_release:app.open_settings()
+        Button:
+            text:"Help"
+            size_hint_x: None
+            width: 65
+        Button:
+            text:"Logout"
+            size_hint_x: None
+            width: 65
+            on_release:app.root.changeScreen(self.text.lower())
+
+<SaveDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+            on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+        TextInput:
+            id: text_input
+            size_hint_y: None
+            height: 30
+            multiline: False
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Save"
+                on_release: root.save(filechooser.path, text_input.text)
