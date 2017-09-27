@@ -40,7 +40,7 @@
     BoxLayout:
         EmptyWidget:
         Image:
-            source:'../images/bema_login.png'
+            source:'./images/bema_login.png'
 
 <EmptyWidget@Screen>:
     BoxLayout:
@@ -48,18 +48,44 @@
         Container:
         Widget:
 
+
 <MainScreen@Screen>:
     GridLayout:
-        rows:3
-#        size_hint: 1,.666
-        ToolbarScreen:
+        rows:2
+        ActionBar: 
+            id: actBar         
+            pos_hint: {'top':1} 
+            ActionView:
+                use_separator: True
+                ActionPrevious:
+                    title: 'BEMA'
+                    with_previous: True
+                ActionOverflow:
+                ActionButton:
+                    text: 'Btn0'
+                    icon: 'atlas://data/images/defaulttheme/audio-volume-high'
+                ActionButton:
+                    text: 'Query'
+                    on_release:app.open_settings()
+                ActionButton:
+                    text: 'Export'
+                    on_release:app.root.show_save()
+
+                ActionGroup:
+                    text: 'More'
+                    ActionButton:
+                        text: 'Settings'
+                    ActionButton:
+                        text: 'Help'
+                    ActionButton:
+                        text: 'Logout'
+                        on_release:app.root.changeScreen(self.text.lower())
         Body:
-        Widget:
 
 <Body@Screen>:
     BoxLayout:
         Image:
-            source:'../images/bema_logo_home.png'
+            source:'./images/bema_logo_home.png'
             
 
 
@@ -102,7 +128,7 @@
             text:"Logout"
             size_hint_x: None
             width: 65
-            on_release:app.root.changeScreen(self.text.lower())
+            #on_release:app.root.changeScreen(self.text.lower())
 
 <SaveDialog>:
     BoxLayout:
