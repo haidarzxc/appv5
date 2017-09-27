@@ -2,7 +2,8 @@ __all__ = ('Settings', 'SettingsPanel', 'SettingItem', 'SettingString',
            'SettingPath', 'SettingBoolean', 'SettingNumeric', 'SettingOptions',
            'SettingTitle', 'SettingsWithSidebar', 'SettingsWithSpinner',
            'SettingsWithTabbedPanel', 'SettingsWithNoMenu',
-           'InterfaceWithSidebar', 'ContentPanel', 'MenuSidebar','SettingButtons')
+           'InterfaceWithSidebar', 'ContentPanel', 'MenuSidebar','SettingButtons'
+           ,'SettingDatePicker')
 
 import json
 import os
@@ -25,7 +26,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty, StringProperty, ListProperty, \
-    BooleanProperty, NumericProperty, DictProperty
+    BooleanProperty, NumericProperty, DictProperty, ReferenceListProperty
+
+from calendar_widget import *
 
 class SettingSpacer(Widget):
     pass
@@ -80,6 +83,45 @@ class SettingItem(FloatLayout):
         if not isinstance(value, string_types):
             value = str(value)
         panel.set_value(self.section, self.key, value)
+
+class SettingDatePicker(SettingItem):
+    pHint_x = NumericProperty(0.7)
+    pHint_y = NumericProperty(0.7)
+    pHint = ReferenceListProperty(pHint_x ,pHint_y)
+    def __init__(self,touch_switch=False, *args,**kwargs):
+        self.register_event_type('on_release')
+        self.touch_switch = touch_switch
+        super(SettingItem, self).__init__(*args,**kwargs)
+        for aButton in kwargs["buttons"]:
+            oButton=Button(text=aButton['title'], font_size= '15sp')
+            oButton.ID=aButton['id']
+            oButton.bind (on_release=self.run)
+            self.add_widget(oButton)
+            
+    
+    def set_value(self, section, key, value):
+        # set_value normally reads the configparser values and runs on an error
+        # to do nothing here
+        return
+
+    def show_popup(self, isnt, val):
+        self.popup.size_hint=self.pHint        
+        if val:
+            Window.release_all_keyboards()
+            self.popup.open()
+        
+    def update_value(self,instance):
+        instance.text = "%s-%s-%s" % tuple(self.cal.active_date)
+        self.panel.settings.dispatch('on_config_change',self.panel.config, self.section, self.key, instance.text)
+        self.focus = False
+
+    def run(self,instance):
+        instance.text= today_date()
+        self.cal = CalendarWidget(as_popup=True, touch_switch=self.touch_switch)
+        self.popup = Popup(content=self.cal, on_dismiss=lambda x:self.update_value(instance), title="Calendar")
+        self.cal.parent_popup = self.popup
+        self.show_popup(instance,today_date())
+        
 
 
 class SettingButtons(SettingItem):
@@ -375,6 +417,7 @@ class Settings(BoxLayout):
         self.register_type('title', SettingTitle)
         self.register_type('path', SettingPath)
         self.register_type('buttons', SettingButtons)
+        self.register_type('datePicker', SettingDatePicker)
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -449,12 +492,19 @@ class Settings(BoxLayout):
         from os.path import join
 
         import os
-        self.add_json_panel('Query A', Config,
-            join(os.getcwd(), 'querySettings.json'))
-        self.add_json_panel('Query B', Config,
-            join(os.getcwd(), 'querySettings.json'))
-        self.add_json_panel('Query C', Config,
-            join(os.getcwd(), 'querySettings.json'))
+        Config.setdefaults('app', {
+            'bool': True,
+            'numeric': 10,
+            'options': 'option2',
+            'string': 'some_string',
+            'path': '/some/path'})
+
+        self.add_json_panel('Retrofit', Config,
+            join(os.getcwd(), 'retrofit.json'))
+        self.add_json_panel('Unretrofit', Config,
+            join(os.getcwd(), 'retrofit.json'))
+        self.add_json_panel('Lean Analysis', Config,
+            join(os.getcwd(), 'retrofit.json'))
 
 class SettingsWithSidebar(Settings):
     pass
