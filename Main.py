@@ -16,6 +16,7 @@ import os
 from customSettings import Settings
 from customSettings import SettingsWithSidebar
 import json
+from table import *
 
 
 class SaveDialog(FloatLayout):
@@ -24,14 +25,17 @@ class SaveDialog(FloatLayout):
     cancel = ObjectProperty(None)
 
 class Root(BoxLayout):
+    sm=None
     def __init__(self, **kwargs):
         super(Root,self).__init__(**kwargs)
+        
 
     def changeScreen(self, buttonTxt):
         if buttonTxt == "login":
             self.ids.screen_manager.current="main_screen"
         elif buttonTxt=="logout":
             self.ids.screen_manager.current="login_screen"
+        Root.sm=self.ids.screen_manager
 
     savefile = ObjectProperty(None)
     text_input = ObjectProperty(None)
@@ -55,7 +59,7 @@ class MainApp(App):
         self.settings_cls = SettingsWithSidebar
     	return Root()
 
-    x=["A","B","C","D","D","D","D","D"]
+    x=["Alpha","Bravo","Charley","Delta","Echo","Foxtrot","xray"]
     def populateList(lst):
         with open('retrofit.json') as data_file:    
             data = json.load(data_file)
@@ -73,8 +77,9 @@ class MainApp(App):
     def On_config_change(self, settings, config, section, key, value):
         if section==u'app':
             if key==u'button_run':
-                print ("run pressed")
                 super(MainApp, self).close_settings()
+                Root.sm.current="query_screen"
+                Grid()
             elif key==u'stndDate':
                 if(value==u'start_Date'):
                     print "start date" ,value
