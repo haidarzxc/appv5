@@ -15,6 +15,8 @@ from kivy.uix.button import Button
 import os
 from customSettings import Settings
 from customSettings import SettingsWithSidebar
+import json
+from table import *
 
 
 class SaveDialog(FloatLayout):
@@ -23,14 +25,17 @@ class SaveDialog(FloatLayout):
     cancel = ObjectProperty(None)
 
 class Root(BoxLayout):
+    sm=None
     def __init__(self, **kwargs):
         super(Root,self).__init__(**kwargs)
+        
 
     def changeScreen(self, buttonTxt):
         if buttonTxt == "login":
             self.ids.screen_manager.current="main_screen"
         elif buttonTxt=="logout":
             self.ids.screen_manager.current="login_screen"
+        Root.sm=self.ids.screen_manager
 
     savefile = ObjectProperty(None)
     text_input = ObjectProperty(None)
@@ -48,16 +53,21 @@ class Root(BoxLayout):
             stream.write(self.text_input.text)
             self.dismiss_popup()
 
-
  
 class MainApp(App):
     def build(self):
         self.settings_cls = SettingsWithSidebar
-        # s=Settings()
-        # s.add_kivy_panel()
-        # s.bind(on_close=self.stop)
-        # s.bind(on_config_change=self.On_config_change)
     	return Root()
+
+    x=["Alpha","Bravo","Charley","Delta","Echo","Foxtrot","xray"]
+    def populateList(lst):
+        with open('retrofit.json') as data_file:    
+            data = json.load(data_file)
+        data[3]["options"]=lst
+        with open('retrofit.json', 'w') as outfile:
+            json.dump(data, outfile)
+        return lst
+    populateList(x)
 
     def build_settings(self,settings):
         settings.bind(on_close=self.stop)
@@ -65,10 +75,17 @@ class MainApp(App):
         return settings
 
     def On_config_change(self, settings, config, section, key, value):
-        if section==u'MainApp':
+        if section==u'app':
             if key==u'button_run':
-                # print ("run pressed")
                 super(MainApp, self).close_settings()
+                Root.sm.current="query_screen"
+                Grid()
+            elif key==u'stndDate':
+                if(value==u'start_Date'):
+                    print "start date" ,value
+                else:
+                    print "end Date", value
+
 
 Factory.register('Root', cls=Root)
 Factory.register('SaveDialog', cls=SaveDialog)

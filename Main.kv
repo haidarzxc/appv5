@@ -5,6 +5,8 @@
             name: "login_screen"
         MainScreen:
             name: "main_screen"
+        QueryScreen:
+            name: "query_screen"
 
 <Container@Screen>:
     BoxLayout:
@@ -29,6 +31,7 @@
                 size_hint: .5, 1
                 font_size: 24
             TextInput:
+                password:True
                 id:password
         BoxLayout: 
             Widget: 
@@ -48,61 +51,83 @@
         Container:
         Widget:
 
+<ToolbarScreen@Screen>:
+    size_hint_y: None
+    #height: 50
+    ActionBar: 
+        id: actBar         
+        pos_hint: {'top':1}  
+        ActionView:
+            use_separator: True
+            ActionPrevious:
+                title: 'BEMA'
+                with_previous: True
+            ActionOverflow:
+            ActionButton:
+                text: 'Query'
+                on_release:app.open_settings()
+            ActionButton:
+                text: 'Export'
+                on_release:app.root.show_save()
+
+            ActionGroup:
+                text: 'More'
+                ActionButton:
+                    text: 'Settings'
+                ActionButton:
+                    text: 'Help'
+                ActionButton:
+                    text: 'Logout'
+                    on_release:app.root.changeScreen(self.text.lower())
+
 <MainScreen@Screen>:
     GridLayout:
-        rows:3
-#        size_hint: 1,.666
+        rows:2
         ToolbarScreen:
         Body:
-        Widget:
+
+
+        #Widget:
 
 <Body@Screen>:
     BoxLayout:
         Image:
             source:'../images/bema_logo_home.png'
-            
 
+<TableHeader>
+    size_hint_y: None
+    height: '30dp'
+    width: '100dp'
 
-<ToolbarScreen@Screen>:
-    BoxLayout:
-#        pos_hint: {'center_x':.5,'center_y':.5}
-#        top: self.parent.top
-        pos_hint:{'right':1, 'top':1}
-        size_hint_y: None
-        height: 32
-        spacing: 10 
-        padding: 3   
-                
-        canvas:
-            Color:
-                rgba: .1, .1, .1, 1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        Button:
-            text:"Query"
-            size_hint_x: None
-            width: 65
-            on_release:app.open_settings()
-        Button:
-            text:"Export"
-            size_hint_x: None
-            width: 65
-            on_release:app.root.show_save()
-        Button:
-            text:"Settings"
-            size_hint_x: None
-            width: 65
-            #on_release:app.open_settings()
-        Button:
-            text:"Help"
-            size_hint_x: None
-            width: 65
-        Button:
-            text:"Logout"
-            size_hint_x: None
-            width: 65
-            on_release:app.root.changeScreen(self.text.lower())
+    canvas.before:
+        Color:
+            rgb: 0.5, 0.5, 0.5
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Record>:
+    size_hint_y: None
+    height: '30dp'
+    width: '100dp'
+
+    canvas.before:
+        Color:
+            rgb: 0.2, 0.2, 0.2
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<QueryScreen@Screen>:
+    GridLayout:
+        rows:2
+        ToolbarScreen:
+        AnchorLayout:
+
+            ScrollView:
+                Grid:
+                    
+   
 
 <SaveDialog>:
     BoxLayout:
